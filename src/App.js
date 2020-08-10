@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import alanBtn from '@alan-ai/alan-sdk-web';
 
+import NewsCards from './components/NewsCards/NewsCards';
+import useStyels from './styles';
+
 const alanKey = process.env.REACT_APP_ALAN_KEY;
 
 const App = () => {
-  const [articles, setArticles] = useState([]);
+  const [newsArticles, setNewsArticles] = useState([]);
+  const classes = useStyels();
 
   useEffect(() => {
     alanBtn({
       key: alanKey,
       onCommand: ({ command, articles }) => {
         if (command === 'newsHeadlines') {
-          setArticles(articles);
+          setNewsArticles(articles);
         }
       },
     });
@@ -19,7 +23,14 @@ const App = () => {
 
   return (
     <div>
-      <h1>Voice Controlled News App</h1>
+      <div className={classes.logoContainer}>
+        <img
+          src="https://alan.app/voice/images/previews/preview.jpg"
+          alt="alan ai logo"
+          className={classes.alanLogo}
+        />
+      </div>
+      <NewsCards articles={newsArticles} />
     </div>
   );
 };
