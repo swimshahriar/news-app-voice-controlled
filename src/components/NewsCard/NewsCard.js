@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 import {
   Card,
   CardActions,
@@ -8,18 +8,50 @@ import {
   Button,
   Typography,
 } from '@material-ui/core';
+import classNames from 'classnames';
 
 import useStyles from './styles';
 
 const NewsCard = ({
   article: { description, publishedAt, source, title, url, urlToImage },
+  activeArticle,
   i,
 }) => {
   const classes = useStyles();
+
+  const [elRefs, setElRefs] = useState([]);
+  const scrollToRef = (ref) => window.scroll(0, ref.current.offsetTop - 50);
+
+  useEffect(() => {
+    setElRefs((refs) =>
+      Array(20)
+        .fill()
+        .map((_, j) => refs[j] || createRef())
+    );
+  }, []);
+
+  useEffect(() => {
+    if (i === activeArticle && elRefs[activeArticle]) {
+      scrollToRef(elRefs[activeArticle]);
+    }
+  }, [i, elRefs, activeArticle]);
+
   return (
-    <Card className={classes.card}>
+    <Card
+      ref={elRefs[i]}
+      className={classNames(
+        classes.card,
+        activeArticle === i ? classes.activeCard : null
+      )}
+    >
       <CardActionArea href={url} target="_blank">
-        <CardMedia className={classes.media} image={urlToImage} />
+        <CardMedia
+          className={classes.media}
+          image={
+            urlToImage ||
+            'https://www.industry.gov.au/sites/default/files/August%202018/image/news-placeholder-738.png'
+          }
+        />
         <div className={classes.details}>
           <Typography variant="body2" color="textSecondary" component="h2">
             {new Date(publishedAt).toDateString()}
